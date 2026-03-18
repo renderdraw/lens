@@ -366,6 +366,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
         isActive,
         mode: currentMode,
         annotationCount: annotations.length,
+        annotations,
       });
       break;
   }

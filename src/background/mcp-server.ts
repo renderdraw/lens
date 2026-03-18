@@ -11,6 +11,26 @@ let sessions: Map<string, AnnotationSession> = new Map();
 let sseClients: Array<(data: string) => void> = [];
 let pendingWatchers: Array<(annotations: RAFAnnotation[]) => void> = [];
 
+// Bulk-load sessions from IndexedDB into the in-memory Map.
+// Called once on service worker startup to restore state after MV3 restarts.
+export function hydrateFromDB(savedSessions: AnnotationSession[]) {
+  for (const session of savedSessions) {
+    sessions.set(session.id, session);
+  }
+}
+
+// Query helpers for service worker message handler
+export function getSessionByUrlFromMemory(url: string): AnnotationSession | undefined {
+  for (const session of sessions.values()) {
+    if (session.url === url) return session;
+  }
+  return undefined;
+}
+
+export function getAllSessionsFromMemory(): AnnotationSession[] {
+  return Array.from(sessions.values());
+}
+
 export function updateSession(session: AnnotationSession) {
   sessions.set(session.id, session);
   // Notify SSE clients

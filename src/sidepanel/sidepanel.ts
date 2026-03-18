@@ -582,22 +582,54 @@ chrome.runtime.onMessage.addListener((msg) => {
 (async () => {
   await loadProjects();
 
-  // Get current state from active tab
+  // Get current state from active tab's content script
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (tabs[0]?.id) {
+  const activeTab = tabs[0];
+  if (activeTab?.id) {
     try {
-      const response = await chrome.tabs.sendMessage(tabs[0].id, { type: "get:state" }) as {
+      const response = await chrome.tabs.sendMessage(activeTab.id, { type: "get:state" }) as {
         isActive: boolean;
         mode: AnnotationMode;
         annotationCount: number;
+        annotations?: RAFAnnotation[];
       } | undefined;
       if (response) {
         isActive = response.isActive;
         currentMode = response.mode;
+        // Content script may return live annotations
+        if (response.annotations?.length) {
+          annotations = response.annotations;
+          sessionUrl = activeTab.url || "";
+          sessionTitle = activeTab.title || "";
+        }
       }
     } catch {
-      // Content script not loaded
+      // Content script not loaded — that's fine
     }
   }
+
+  // If content script had no annotations, load saved session from service worker
+  // (which hydrated from IndexedDB on startup)
+  if (annotations.length === 0 && activeTab?.url) {
+    try {
+      const response = await chrome.runtime.sendMessage({
+        type: "get:session_by_url",
+        url: activeTab.url,
+      }) as { session: AnnotationSession | null } | undefined;
+      if (response?.session) {
+        annotations = response.session.annotations;
+        sessionUrl = response.session.url;
+        sessionTitle = response.session.title;
+        currentMode = response.session.mode;
+        // Restore project context from saved session if we don't have one
+        if (!activeProject && response.session.project) {
+          activeProject = response.session.project;
+        }
+      }
+    } catch {
+      // Service worker not ready yet
+    }
+  }
+
   render();
 })();

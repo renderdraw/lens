@@ -5,8 +5,17 @@
 
 import { MSG } from "../shared/constants";
 import { saveSession, getAllSessions, evictStaleSessions } from "../shared/storage";
-import { updateSession, handleToolCall, MCP_TOOLS } from "./mcp-server";
+import { updateSession, hydrateFromDB, handleToolCall, MCP_TOOLS, getSessionByUrlFromMemory, getAllSessionsFromMemory } from "./mcp-server";
 import type { AnnotationSession } from "../shared/raf-schema";
+
+// ── Hydrate in-memory store from IndexedDB on startup ────
+// MV3 service workers can be killed and restarted at any time.
+// On restart, the in-memory MCP session Map is empty.
+// Rehydrate it from IndexedDB so MCP queries return saved data.
+getAllSessions().then((sessions) => {
+  hydrateFromDB(sessions);
+  console.log(`[RenderDraw Lens] Hydrated ${sessions.length} sessions from IndexedDB`);
+});
 
 // ── Keepalive ──────────────────────────────────
 
@@ -71,6 +80,19 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     case MSG.CAPTURE_STOP: {
       stopCapture();
       sendResponse({ ok: true });
+      break;
+    }
+
+    // Side panel requests full session for a URL
+    case "get:session_by_url": {
+      const session = getSessionByUrlFromMemory(msg.url);
+      sendResponse({ session: session || null });
+      break;
+    }
+
+    // Side panel requests all sessions
+    case "get:all_sessions": {
+      sendResponse({ sessions: getAllSessionsFromMemory() });
       break;
     }
 

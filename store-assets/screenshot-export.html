@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280, height=800" />
+<title>Screenshot — Export Formats</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  width: 1280px; height: 800px; overflow: hidden;
+  font-family: 'DM Sans', sans-serif;
+  background: #0a0a0f; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.container {
+  display: flex; flex-direction: column; align-items: center; gap: 40px;
+  width: 100%; padding: 40px 60px;
+}
+
+.header { text-align: center; }
+.header .logo-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 16px; }
+.logo {
+  width: 36px; height: 36px; background: linear-gradient(135deg, #FFD700, #f59e0b);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 700; color: #0a0a0f;
+}
+.header h1 { font-size: 28px; font-weight: 700; color: #FFD700; letter-spacing: 0.5px; }
+.header p { font-size: 15px; color: #a0a0b0; margin-top: 8px; }
+
+.export-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 100%;
+}
+
+.export-card {
+  background: #12121a; border: 1px solid #2a2a3a; border-radius: 12px;
+  padding: 24px 20px; display: flex; flex-direction: column; align-items: center;
+  text-align: center; transition: all 0.2s;
+}
+.export-card:hover { border-color: rgba(255,255,255,0.1); }
+
+.export-icon {
+  width: 56px; height: 56px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; margin-bottom: 14px;
+}
+.icon-md { background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.2); }
+.icon-json { background: rgba(20,184,166,0.1); border: 1px solid rgba(20,184,166,0.2); }
+.icon-pw { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2); }
+.icon-remotion { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); }
+
+.export-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.export-card p { font-size: 11px; color: #606070; line-height: 1.5; }
+
+.code-block {
+  width: 100%; background: #0d0d15; border: 1px solid #2a2a3a; border-radius: 10px;
+  padding: 16px 20px; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  line-height: 1.7; margin-top: 8px; text-align: left;
+}
+.code-comment { color: #606070; }
+.code-key { color: #f59e0b; }
+.code-string { color: #14B8A6; }
+.code-keyword { color: #8b5cf6; }
+.code-method { color: #3b82f6; }
+.code-num { color: #ef4444; }
+.code-punc { color: #606070; }
+
+/* Bottom row: MCP + clipboard */
+.bottom-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%;
+}
+
+.mcp-card {
+  background: #12121a; border: 1px solid #2a2a3a; border-radius: 12px;
+  padding: 20px;
+}
+.mcp-card h3 {
+  font-size: 13px; font-weight: 600; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.mcp-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; }
+.mcp-tools { display: flex; flex-wrap: wrap; gap: 6px; }
+.mcp-tool {
+  padding: 4px 10px; background: rgba(20,184,166,0.1); border: 1px solid rgba(20,184,166,0.2);
+  border-radius: 5px; font-size: 10px; color: #14B8A6; font-family: 'JetBrains Mono', monospace;
+}
+
+.clipboard-card {
+  background: #12121a; border: 1px solid #2a2a3a; border-radius: 12px;
+  padding: 20px;
+}
+.clipboard-card h3 { font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="logo-row">
+      <div class="logo">◎</div>
+      <h1>RenderDraw Lens</h1>
+    </div>
+    <p>Export annotations in any format — from structured Markdown to executable Playwright tests</p>
+  </div>
+
+  <div class="export-grid">
+    <div class="export-card">
+      <div class="export-icon icon-md">📝</div>
+      <h3 style="color: #FFD700;">Markdown</h3>
+      <p>Structured feedback grouped by severity with emoji indicators</p>
+      <div class="code-block">
+        <span class="code-comment">## 🔴 Blocking</span><br>
+        <span class="code-key">**Target:**</span> <span class="code-string">`&lt;nav&gt;`</span><br>
+        <span class="code-key">**Selector:**</span> <span class="code-string">`.nav`</span><br>
+        <span class="code-punc">&gt;</span> <span style="color:#a0a0b0;">Items overlap…</span>
+      </div>
+    </div>
+    <div class="export-card">
+      <div class="export-icon icon-json">{ }</div>
+      <h3 style="color: #14B8A6;">JSON / RAF</h3>
+      <p>Full RenderDraw Annotation Format with computed styles & trees</p>
+      <div class="code-block">
+        <span class="code-punc">{</span><br>
+        &nbsp;&nbsp;<span class="code-key">"mode"</span><span class="code-punc">:</span> <span class="code-string">"feedback"</span><span class="code-punc">,</span><br>
+        &nbsp;&nbsp;<span class="code-key">"severity"</span><span class="code-punc">:</span> <span class="code-string">"blocking"</span><span class="code-punc">,</span><br>
+        &nbsp;&nbsp;<span class="code-key">"target"</span><span class="code-punc">:</span> <span class="code-punc">{</span> <span class="code-key">"selector"</span><span class="code-punc">:</span> <span class="code-string">".nav"</span> <span class="code-punc">}</span><br>
+        <span class="code-punc">}</span>
+      </div>
+    </div>
+    <div class="export-card">
+      <div class="export-icon icon-pw">🎭</div>
+      <h3 style="color: #8b5cf6;">Playwright</h3>
+      <p>Executable visual regression tests from QA assertions</p>
+      <div class="code-block">
+        <span class="code-keyword">test</span><span class="code-punc">(</span><span class="code-string">'visual'</span><span class="code-punc">,</span> <span class="code-keyword">async</span> <span class="code-punc">({</span>page<span class="code-punc">}) => {</span><br>
+        &nbsp;&nbsp;<span class="code-keyword">await</span> <span class="code-method">expect</span><span class="code-punc">(</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;page.<span class="code-method">locator</span><span class="code-punc">(</span><span class="code-string">'.btn'</span><span class="code-punc">)</span><br>
+        &nbsp;&nbsp;<span class="code-punc">).</span><span class="code-method">toBeVisible</span><span class="code-punc">();</span><br>
+        <span class="code-punc">});</span>
+      </div>
+    </div>
+    <div class="export-card">
+      <div class="export-icon icon-remotion">🎬</div>
+      <h3 style="color: #ef4444;">Remotion</h3>
+      <p>Video manifests from director sequences for React rendering</p>
+      <div class="code-block">
+        <span class="code-punc">{</span><br>
+        &nbsp;&nbsp;<span class="code-key">"fps"</span><span class="code-punc">:</span> <span class="code-num">30</span><span class="code-punc">,</span><br>
+        &nbsp;&nbsp;<span class="code-key">"sequences"</span><span class="code-punc">: [{</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"action"</span><span class="code-punc">:</span> <span class="code-string">"zoom"</span><span class="code-punc">,</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"duration"</span><span class="code-punc">:</span> <span class="code-num">60</span><br>
+        &nbsp;&nbsp;<span class="code-punc">}]</span><br>
+        <span class="code-punc">}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-row">
+    <div class="mcp-card">
+      <h3><div class="mcp-dot"></div> MCP Bridge — Claude Code Integration</h3>
+      <div class="mcp-tools">
+        <span class="mcp-tool">lens_get_pending</span>
+        <span class="mcp-tool">lens_get_session</span>
+        <span class="mcp-tool">lens_acknowledge</span>
+        <span class="mcp-tool">lens_resolve</span>
+        <span class="mcp-tool">lens_dismiss</span>
+        <span class="mcp-tool">lens_reply</span>
+        <span class="mcp-tool">lens_watch</span>
+      </div>
+    </div>
+    <div class="clipboard-card">
+      <h3>⌨️ Keyboard-First Workflow</h3>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span style="padding: 4px 8px; background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 4px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #FFD700;">⌘⇧L</span>
+          <span style="font-size: 11px; color: #606070;">Toggle Lens</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span style="padding: 4px 8px; background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 4px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #FFD700;">C</span>
+          <span style="font-size: 11px; color: #606070;">Copy to clipboard</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span style="padding: 4px 8px; background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 4px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #FFD700;">Esc</span>
+          <span style="font-size: 11px; color: #606070;">Dismiss</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

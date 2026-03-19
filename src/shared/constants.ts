@@ -51,7 +51,7 @@ export const FONTS = {
 
 export const MCP_PORT = 4848;
 
-export const EXTENSION_ID = "renderdraw-lens";
+export const EXTENSION_ID = "lens";
 
 export const STORAGE_KEYS = {
   sessions: "lens_sessions",

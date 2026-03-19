@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "RenderDraw Lens",
+  "name": "Lens",
   "version": "1.0.0",
-  "description": "Universal Visual Feedback & Video Direction for the RenderDraw Stack",
+  "description": "Universal Visual Feedback, Video Direction & QA Assertions",
   "permissions": [
     "activeTab",
     "sidePanel",
@@ -48,7 +48,7 @@
         "default": "Ctrl+Shift+L",
         "mac": "Command+Shift+L"
       },
-      "description": "Toggle RenderDraw Lens"
+      "description": "Toggle Lens"
     }
   }
 }

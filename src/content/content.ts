@@ -376,4 +376,4 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
 // ── Init ───────────────────────────────────────
 
 // Don't auto-activate; wait for toggle command
-console.log("[RenderDraw Lens] Content script loaded");
+console.log("[Lens] Content script loaded");

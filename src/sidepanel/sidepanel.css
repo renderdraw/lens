@@ -718,6 +718,15 @@ body {
   font-style: italic;
 }
 
+.sp-settings__link {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+.sp-settings__link:hover {
+  text-decoration: underline;
+}
+
 .sp-settings__project-row {
   display: flex;
   align-items: center;

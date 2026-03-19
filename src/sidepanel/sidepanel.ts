@@ -95,7 +95,7 @@ function render() {
   const header = h("div", { className: "sp-header" });
   const brand = h("div", { className: "sp-header__brand" });
   brand.appendChild(h("div", { className: "sp-header__logo" }, ["\u25CE"]));
-  brand.appendChild(h("div", { className: "sp-header__title" }, ["RenderDraw Lens"]));
+  brand.appendChild(h("div", { className: "sp-header__title" }, ["Lens"]));
   header.appendChild(brand);
 
   const actions = h("div", { className: "sp-header__actions" });
@@ -512,6 +512,15 @@ function renderSettings() {
       settings.appendChild(row);
     }
   }
+
+  // About section
+  settings.appendChild(h("div", { className: "sp-settings__divider" }));
+  settings.appendChild(h("div", { className: "sp-settings__section-title" }, ["About"]));
+  const aboutText = h("div", { className: "sp-settings__hint" });
+  aboutText.appendChild(document.createTextNode("Made with \u2764 by "));
+  const link = h("a", { href: "https://renderdraw.com", target: "_blank", className: "sp-settings__link" }, ["RenderDraw"]);
+  aboutText.appendChild(link);
+  settings.appendChild(aboutText);
 
   app.appendChild(settings);
 }

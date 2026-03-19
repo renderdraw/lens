@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280, height=800" />
+<title>Screenshot — Feedback Mode</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  width: 1280px; height: 800px; overflow: hidden;
+  font-family: 'DM Sans', sans-serif;
+  background: #0a0a0f;
+  color: #fff;
+  display: flex;
+}
+
+/* ── Fake webpage behind ── */
+.webpage {
+  flex: 1;
+  background: #111118;
+  position: relative;
+  overflow: hidden;
+}
+.webpage-header {
+  height: 56px;
+  background: #16161e;
+  border-bottom: 1px solid #2a2a3a;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 12px;
+}
+.webpage-header .dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot-r { background: #ef4444; }
+.dot-y { background: #f59e0b; }
+.dot-g { background: #22c55e; }
+.webpage-header .url-bar {
+  flex: 1; margin-left: 12px;
+  background: #0a0a0f; border-radius: 6px; padding: 6px 14px;
+  font-size: 12px; color: #606070; font-family: 'JetBrains Mono', monospace;
+}
+.webpage-content { padding: 40px; }
+.webpage-content h1 {
+  font-size: 36px; font-weight: 700; color: #fff;
+  margin-bottom: 12px;
+}
+.webpage-content p {
+  font-size: 15px; color: #a0a0b0; line-height: 1.7; max-width: 600px;
+  margin-bottom: 20px;
+}
+.webpage-content .btn-row { display: flex; gap: 12px; margin-top: 24px; }
+.webpage-content .btn {
+  padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 600;
+  font-family: inherit; border: none; cursor: pointer;
+}
+.btn-primary { background: linear-gradient(135deg, #FFD700, #f59e0b); color: #0a0a0f; }
+.btn-secondary { background: #1a1a24; color: #a0a0b0; border: 1px solid #2a2a3a !important; }
+
+/* ── Highlighted element ── */
+.highlight-box {
+  position: absolute; top: 180px; left: 38px;
+  width: 220px; height: 48px;
+  border: 2px solid #FFD700;
+  border-radius: 10px;
+  box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.15), 0 0 24px rgba(255, 215, 0, 0.1);
+  pointer-events: none;
+}
+.highlight-label {
+  position: absolute; top: 172px; left: 270px;
+  background: #FFD700; color: #0a0a0f; font-size: 10px; font-weight: 700;
+  padding: 3px 8px; border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+}
+
+/* ── Annotation popup ── */
+.annotation-popup {
+  position: absolute; top: 240px; left: 38px;
+  width: 340px;
+  background: #12121a; border: 1px solid #2a2a3a; border-radius: 12px;
+  padding: 16px; box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+}
+.popup-mode { font-size: 10px; color: #FFD700; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 8px; }
+.popup-target { font-size: 11px; color: #14B8A6; font-family: 'JetBrains Mono', monospace; margin-bottom: 10px; }
+.popup-textarea {
+  width: 100%; height: 60px; background: #0a0a0f; border: 1px solid #2a2a3a; border-radius: 6px;
+  color: #fff; font-size: 12px; padding: 8px 10px; font-family: inherit; resize: none;
+  margin-bottom: 10px;
+}
+.popup-row { display: flex; gap: 6px; margin-bottom: 10px; }
+.popup-chip {
+  padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 600;
+  cursor: pointer; border: 1px solid transparent;
+}
+.chip-active { background: rgba(255,215,0,0.15); color: #FFD700; border-color: rgba(255,215,0,0.3); }
+.chip-inactive { background: #1a1a24; color: #606070; border-color: #2a2a3a; }
+.popup-severity { display: flex; gap: 4px; }
+.sev { padding: 3px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; text-transform: uppercase; }
+.sev-blocking { background: rgba(239,68,68,0.15); color: #ef4444; }
+.sev-important { background: rgba(245,158,11,0.15); color: #f59e0b; }
+.sev-suggestion { background: rgba(20,184,166,0.15); color: #14B8A6; }
+.popup-submit {
+  width: 100%; padding: 8px; border: none; border-radius: 6px;
+  background: linear-gradient(135deg, #FFD700, #f59e0b); color: #0a0a0f;
+  font-size: 11px; font-weight: 700; font-family: inherit; text-transform: uppercase;
+  letter-spacing: 0.5px; cursor: pointer; margin-top: 4px;
+}
+
+/* ── Fake cards on page ── */
+.card-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  margin-top: 32px;
+}
+.card {
+  background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 10px;
+  padding: 20px; height: 120px;
+}
+.card-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+.card-text { font-size: 11px; color: #606070; line-height: 1.5; }
+
+/* ── Side panel ── */
+.sidepanel {
+  width: 340px; flex-shrink: 0;
+  background: #0a0a0f;
+  border-left: 1px solid #2a2a3a;
+  display: flex; flex-direction: column;
+}
+.sp-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-bottom: 1px solid #2a2a3a; background: #12121a;
+}
+.sp-brand { display: flex; align-items: center; gap: 8px; }
+.sp-logo {
+  width: 20px; height: 20px;
+  background: linear-gradient(135deg, #FFD700, #f59e0b);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #0a0a0f;
+}
+.sp-title { font-size: 14px; font-weight: 600; color: #FFD700; letter-spacing: 0.3px; }
+.sp-gear { color: #606070; font-size: 14px; }
+
+.sp-project-bar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 16px; border-bottom: 1px solid #2a2a3a;
+  background: rgba(255,215,0,0.02); font-size: 10px;
+}
+.sp-project-label { color: #606070; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+.sp-project-name { color: #FFD700; font-weight: 500; background: #0a0a0f; padding: 3px 8px; border-radius: 4px; border: 1px solid #2a2a3a; }
+
+.sp-tabs {
+  display: flex; border-bottom: 1px solid #2a2a3a; background: #12121a;
+}
+.sp-tab {
+  flex: 1; padding: 8px 4px; text-align: center;
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+  border-bottom: 2px solid transparent;
+}
+.sp-tab-active { color: #FFD700; border-bottom-color: #FFD700; }
+.sp-tab-inactive { color: #606070; }
+
+.sp-session {
+  padding: 8px 16px; border-bottom: 1px solid #2a2a3a;
+  font-size: 11px; color: #606070; font-family: 'JetBrains Mono', monospace;
+}
+.sp-session-meta { display: flex; gap: 12px; margin-top: 4px; font-family: 'DM Sans', sans-serif; }
+.sp-session-meta strong { color: #FFD700; }
+
+.sp-list { flex: 1; overflow-y: auto; padding: 8px; }
+
+.sp-card {
+  background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 8px;
+  padding: 12px; margin-bottom: 8px;
+}
+.sp-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.sp-card-num {
+  width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.num-blocking { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+.num-important { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+.num-suggestion { background: rgba(20,184,166,0.15); color: #14B8A6; border: 1px solid rgba(20,184,166,0.3); }
+.sp-card-target { flex: 1; font-size: 11px; color: #14B8A6; font-family: 'JetBrains Mono', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-card-status {
+  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 2px 6px; border-radius: 4px;
+}
+.status-pending { background: rgba(245,158,11,0.15); color: #f59e0b; }
+.status-resolved { background: rgba(34,197,94,0.15); color: #22c55e; }
+.sp-card-comment { font-size: 12px; color: #a0a0b0; line-height: 1.5; margin-bottom: 6px; }
+.sp-card-badges { display: flex; gap: 4px; }
+.badge-intent { background: rgba(255,215,0,0.15); color: #FFD700; font-size: 10px; padding: 1px 6px; border-radius: 3px; font-weight: 500; }
+.badge-tag { background: rgba(255,255,255,0.05); color: #606070; font-size: 10px; padding: 1px 6px; border-radius: 3px; border: 1px solid #2a2a3a; }
+
+.sp-export {
+  padding: 10px 12px; border-top: 1px solid #2a2a3a; background: #12121a;
+}
+.sp-export-btn {
+  width: 100%; padding: 10px; border: none; border-radius: 6px;
+  background: linear-gradient(135deg, #FFD700, #f59e0b); color: #0a0a0f;
+  font-size: 12px; font-weight: 600; font-family: inherit; text-transform: uppercase;
+  letter-spacing: 0.3px; margin-bottom: 6px;
+}
+.sp-export-row { display: flex; gap: 4px; }
+.sp-export-sm {
+  flex: 1; padding: 5px; border: 1px solid #2a2a3a; border-radius: 6px;
+  background: #1a1a24; color: #a0a0b0; font-size: 10px; font-weight: 600;
+  font-family: inherit; text-transform: uppercase; text-align: center;
+}
+.sp-export-teal { background: linear-gradient(135deg, #0d9488, #14B8A6); color: #0a0a0f; border: none; }
+
+.sp-mcp {
+  padding: 8px 16px; border-top: 1px solid #2a2a3a;
+  display: flex; align-items: center; gap: 6px; font-size: 11px; color: #606070;
+}
+.sp-mcp-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; }
+</style>
+</head>
+<body>
+
+<!-- Webpage -->
+<div class="webpage">
+  <div class="webpage-header">
+    <div class="dot dot-r"></div>
+    <div class="dot dot-y"></div>
+    <div class="dot dot-g"></div>
+    <div class="url-bar">https://journeys.studio/dashboard</div>
+  </div>
+  <div class="webpage-content">
+    <h1>Dashboard</h1>
+    <p>Manage your 3D presentations, track analytics, and collaborate with your team in real-time.</p>
+    <div class="btn-row">
+      <div class="btn btn-primary">Create Journey</div>
+      <div class="btn btn-secondary">View Templates</div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">Q1 Product Launch</div>
+        <div class="card-text">12 slides · Published · 342 views</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Investor Deck 2026</div>
+        <div class="card-text">8 slides · Draft · 0 views</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Team Onboarding</div>
+        <div class="card-text">15 slides · Published · 89 views</div>
+      </div>
+    </div>
+  </div>
+  <!-- Overlays -->
+  <div class="highlight-box"></div>
+  <div class="highlight-label">&lt;button&gt; .btn-primary</div>
+  <div class="annotation-popup">
+    <div class="popup-mode">✦ Feedback Mode</div>
+    <div class="popup-target">&lt;button&gt; .btn.btn-primary</div>
+    <textarea class="popup-textarea">CTA button needs more contrast against dark background. Consider adding a subtle glow or border.</textarea>
+    <div class="popup-row">
+      <span class="popup-chip chip-active">visual_bug</span>
+      <span class="popup-chip chip-inactive">spacing</span>
+      <span class="popup-chip chip-inactive">typography</span>
+      <span class="popup-chip chip-inactive">color</span>
+    </div>
+    <div class="popup-severity">
+      <span class="sev sev-blocking">blocking</span>
+      <span class="sev sev-important">important</span>
+      <span class="sev sev-suggestion" style="border: 1px solid rgba(20,184,166,0.5);">suggestion ✓</span>
+    </div>
+    <button class="popup-submit">Submit Annotation</button>
+  </div>
+</div>
+
+<!-- Side Panel -->
+<div class="sidepanel">
+  <div class="sp-header">
+    <div class="sp-brand">
+      <div class="sp-logo">◎</div>
+      <div class="sp-title">RenderDraw Lens</div>
+    </div>
+    <span class="sp-gear">⚙</span>
+  </div>
+  <div class="sp-project-bar">
+    <span class="sp-project-label">Project</span>
+    <span class="sp-project-name">Journeys App</span>
+  </div>
+  <div class="sp-tabs">
+    <div class="sp-tab sp-tab-active">Feedback</div>
+    <div class="sp-tab sp-tab-inactive">Video</div>
+    <div class="sp-tab sp-tab-inactive">QA</div>
+  </div>
+  <div class="sp-session">
+    journeys.studio/dashboard
+    <div class="sp-session-meta">
+      <span><strong>3</strong> annotations</span>
+      <span><strong>2</strong> pending</span>
+    </div>
+  </div>
+  <div class="sp-list">
+    <div class="sp-card">
+      <div class="sp-card-header">
+        <div class="sp-card-num num-blocking">1</div>
+        <div class="sp-card-target">&lt;nav&gt; .dashboard-nav</div>
+        <span class="sp-card-status status-pending">pending</span>
+      </div>
+      <div class="sp-card-comment">Navigation items overlap on viewport &lt; 1024px. Needs responsive breakpoint fix.</div>
+      <div class="sp-card-badges">
+        <span class="badge-intent">visual_bug</span>
+        <span class="badge-tag">responsive</span>
+      </div>
+    </div>
+    <div class="sp-card">
+      <div class="sp-card-header">
+        <div class="sp-card-num num-suggestion">2</div>
+        <div class="sp-card-target">&lt;button&gt; .btn-primary</div>
+        <span class="sp-card-status status-pending">pending</span>
+      </div>
+      <div class="sp-card-comment">CTA button needs more contrast against dark background.</div>
+      <div class="sp-card-badges">
+        <span class="badge-intent">visual_bug</span>
+        <span class="badge-tag">contrast</span>
+      </div>
+    </div>
+    <div class="sp-card">
+      <div class="sp-card-header">
+        <div class="sp-card-num num-important">3</div>
+        <div class="sp-card-target">&lt;div&gt; .card-grid</div>
+        <span class="sp-card-status status-resolved">resolved</span>
+      </div>
+      <div class="sp-card-comment">Card spacing inconsistent with design system tokens.</div>
+      <div class="sp-card-badges">
+        <span class="badge-intent">spacing</span>
+        <span class="badge-tag">design-system</span>
+      </div>
+    </div>
+  </div>
+  <div class="sp-export">
+    <button class="sp-export-btn">📋 Copy All Feedback</button>
+    <div class="sp-export-row">
+      <div class="sp-export-sm">Copy MD</div>
+      <div class="sp-export-sm">Copy JSON</div>
+      <div class="sp-export-sm sp-export-teal">Push MCP</div>
+    </div>
+  </div>
+  <div class="sp-mcp">
+    <div class="sp-mcp-dot"></div>
+    MCP Connected (port 4848)
+  </div>
+</div>
+
+</body>
+</html>

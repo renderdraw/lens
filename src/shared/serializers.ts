@@ -121,7 +121,7 @@ export function sessionToRemotionManifest(session: AnnotationSession) {
 
   return {
     version: "1.0",
-    source: "renderdraw-lens",
+    source: "lens",
     session_id: session.id,
     source_url: session.url,
     fps: 60,
@@ -267,7 +267,7 @@ export function sessionToClipboard(session: AnnotationSession): string {
 export function sessionToJSON(session: AnnotationSession): string {
   return JSON.stringify({
     version: "1.0",
-    source: "renderdraw-lens",
+    source: "lens",
     exported_at: new Date().toISOString(),
     project: session.project || null,
     session: {

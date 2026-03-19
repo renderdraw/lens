@@ -55,7 +55,7 @@ function render() {
   const header = h("div", { className: "pp-header" });
   header.appendChild(h("div", { className: "pp-logo" }, ["\u25CE"]));
   const brand = h("div", { className: "pp-brand" });
-  brand.appendChild(h("div", { className: "pp-brand__name" }, ["RenderDraw Lens"]));
+  brand.appendChild(h("div", { className: "pp-brand__name" }, ["Lens"]));
   brand.appendChild(h("div", { className: "pp-brand__tagline" }, ["Point. Describe. Ship."]));
   header.appendChild(brand);
   app.appendChild(header);

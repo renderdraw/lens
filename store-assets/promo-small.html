@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+body {
+  width: 440px; height: 280px; overflow: hidden;
+  font-family: 'DM Sans', sans-serif;
+  background: #0a0a0f;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+/* Subtle radial glow */
+.glow {
+  position: absolute; width: 300px; height: 300px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,215,0,0.06) 0%, transparent 70%);
+  top: -80px; left: 70px;
+}
+.glow2 {
+  position: absolute; width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(20,184,166,0.04) 0%, transparent 70%);
+  bottom: -60px; right: 40px;
+}
+.content { position: relative; z-index: 2; text-align: center; }
+.logo-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 14px; }
+.logo {
+  width: 40px; height: 40px; background: linear-gradient(135deg, #FFD700, #f59e0b);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700; color: #0a0a0f;
+  box-shadow: 0 4px 20px rgba(255,215,0,0.25);
+}
+h1 { font-size: 22px; font-weight: 700; color: #FFD700; letter-spacing: 0.5px; }
+.tagline { font-size: 13px; color: #a0a0b0; margin-top: 8px; line-height: 1.5; max-width: 340px; }
+.badges { display: flex; gap: 8px; justify-content: center; margin-top: 16px; }
+.badge {
+  padding: 5px 12px; border-radius: 6px; font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.badge-gold { background: rgba(255,215,0,0.12); color: #FFD700; border: 1px solid rgba(255,215,0,0.2); }
+.badge-teal { background: rgba(20,184,166,0.12); color: #14B8A6; border: 1px solid rgba(20,184,166,0.2); }
+.badge-red { background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<div class="glow2"></div>
+<div class="content">
+  <div class="logo-row">
+    <div class="logo">◎</div>
+    <h1>RenderDraw Lens</h1>
+  </div>
+  <div class="tagline">Visual feedback, video direction & QA assertions for any web page</div>
+  <div class="badges">
+    <span class="badge badge-gold">Feedback</span>
+    <span class="badge badge-red">Video Direction</span>
+    <span class="badge badge-teal">QA Assertions</span>
+  </div>
+</div>
+</body>
+</html>

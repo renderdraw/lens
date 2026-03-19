@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280, height=800" />
+<title>Screenshot — QA Assertions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  width: 1280px; height: 800px; overflow: hidden;
+  font-family: 'DM Sans', sans-serif;
+  background: #0a0a0f; color: #fff; display: flex;
+}
+
+.webpage {
+  flex: 1; background: #111118; position: relative; overflow: hidden;
+}
+.webpage-header {
+  height: 56px; background: #16161e; border-bottom: 1px solid #2a2a3a;
+  display: flex; align-items: center; padding: 0 24px; gap: 12px;
+}
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot-r { background: #ef4444; } .dot-y { background: #f59e0b; } .dot-g { background: #22c55e; }
+.url-bar {
+  flex: 1; margin-left: 12px; background: #0a0a0f; border-radius: 6px; padding: 6px 14px;
+  font-size: 12px; color: #606070; font-family: 'JetBrains Mono', monospace;
+}
+
+.webpage-content { padding: 32px; }
+.webpage-content h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+.webpage-content p { font-size: 14px; color: #a0a0b0; line-height: 1.6; margin-bottom: 20px; }
+
+/* Pricing cards with assertion overlays */
+.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+.pricing-card {
+  background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 12px; padding: 24px;
+  position: relative;
+}
+.pricing-card.highlighted {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245,158,11,0.15), 0 0 20px rgba(245,158,11,0.08);
+}
+.pricing-tier { font-size: 12px; color: #606070; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+.pricing-price { font-size: 32px; font-weight: 700; margin: 8px 0 4px; }
+.pricing-price .currency { font-size: 18px; color: #606070; }
+.pricing-price .period { font-size: 13px; color: #606070; font-weight: 400; }
+.pricing-desc { font-size: 12px; color: #606070; margin-bottom: 16px; }
+.pricing-features { list-style: none; }
+.pricing-features li {
+  font-size: 12px; color: #a0a0b0; padding: 4px 0;
+  display: flex; align-items: center; gap: 6px;
+}
+.pricing-features li::before { content: "✓"; color: #14B8A6; font-weight: 700; font-size: 11px; }
+.pricing-btn {
+  width: 100%; padding: 10px; border: none; border-radius: 6px; margin-top: 16px;
+  font-size: 12px; font-weight: 600; font-family: inherit; text-transform: uppercase;
+  cursor: pointer; letter-spacing: 0.3px;
+}
+.btn-gold { background: linear-gradient(135deg, #FFD700, #f59e0b); color: #0a0a0f; }
+.btn-outline { background: transparent; color: #a0a0b0; border: 1px solid #2a2a3a; }
+
+/* QA assertion overlays */
+.qa-overlay {
+  position: absolute; border: 2px dashed #f59e0b; border-radius: 6px;
+  pointer-events: none;
+}
+.qa-overlay-1 { top: 56px; left: 80px; width: calc(100% / 3 - 24px); height: 280px; top: 180px; left: 32px; }
+.qa-overlay-2 { top: 56px; right: 80px; width: 200px; height: 36px; top: 200px; left: 75px; }
+
+.qa-badge {
+  position: absolute; z-index: 5;
+  background: rgba(245,158,11,0.9); color: #0a0a0f;
+  font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 3px;
+  font-family: 'JetBrains Mono', monospace; white-space: nowrap;
+}
+.qa-badge-1 { top: 164px; left: 32px; }
+.qa-badge-2 { top: 444px; left: 330px; }
+.qa-badge-3 { top: 200px; right: 380px; }
+
+/* Code preview in the bottom */
+.code-preview {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: #0d0d15; border-top: 1px solid #2a2a3a;
+  padding: 12px 24px; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  line-height: 1.6;
+}
+.code-comment { color: #606070; }
+.code-keyword { color: #8b5cf6; }
+.code-fn { color: #f59e0b; }
+.code-string { color: #14B8A6; }
+.code-punc { color: #606070; }
+.code-method { color: #3b82f6; }
+
+/* ── Side panel ── */
+.sidepanel {
+  width: 340px; flex-shrink: 0; background: #0a0a0f;
+  border-left: 1px solid #2a2a3a; display: flex; flex-direction: column;
+}
+.sp-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-bottom: 1px solid #2a2a3a; background: #12121a;
+}
+.sp-brand { display: flex; align-items: center; gap: 8px; }
+.sp-logo {
+  width: 20px; height: 20px; background: linear-gradient(135deg, #FFD700, #f59e0b);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #0a0a0f;
+}
+.sp-title { font-size: 14px; font-weight: 600; color: #FFD700; }
+.sp-project-bar {
+  display: flex; align-items: center; gap: 6px; padding: 6px 16px;
+  border-bottom: 1px solid #2a2a3a; background: rgba(255,215,0,0.02); font-size: 10px;
+}
+.sp-project-label { color: #606070; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+.sp-project-name { color: #FFD700; font-weight: 500; background: #0a0a0f; padding: 3px 8px; border-radius: 4px; border: 1px solid #2a2a3a; }
+
+.sp-tabs { display: flex; border-bottom: 1px solid #2a2a3a; background: #12121a; }
+.sp-tab { flex: 1; padding: 8px 4px; text-align: center; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid transparent; }
+.sp-tab-active { color: #f59e0b; border-bottom-color: #f59e0b; }
+.sp-tab-inactive { color: #606070; }
+
+.sp-list { flex: 1; overflow-y: auto; padding: 8px; }
+
+.qa-card {
+  background: #1a1a24; border: 1px solid #2a2a3a; border-radius: 8px;
+  padding: 12px; margin-bottom: 8px;
+}
+.qa-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.qa-card-num {
+  width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3);
+}
+.qa-card-target { flex: 1; font-size: 11px; color: #14B8A6; font-family: 'JetBrains Mono', monospace; }
+.qa-card-status { font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; background: rgba(245,158,11,0.15); color: #f59e0b; }
+
+.qa-card-assertion {
+  background: #0d0d15; border-radius: 6px; padding: 8px 10px; margin: 6px 0;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; line-height: 1.5;
+}
+.qa-assert-type { color: #8b5cf6; }
+.qa-assert-prop { color: #f59e0b; }
+.qa-assert-val { color: #14B8A6; }
+.qa-assert-op { color: #606070; }
+
+.qa-card-badges { display: flex; gap: 4px; }
+.badge { font-size: 10px; padding: 1px 6px; border-radius: 3px; font-weight: 500; }
+.badge-intent { background: rgba(255,215,0,0.15); color: #FFD700; }
+.badge-tag { background: rgba(255,255,255,0.05); color: #606070; border: 1px solid #2a2a3a; }
+
+.sp-export {
+  padding: 10px 12px; border-top: 1px solid #2a2a3a; background: #12121a;
+}
+.sp-export-btn {
+  width: 100%; padding: 10px; border: none; border-radius: 6px;
+  background: linear-gradient(135deg, #FFD700, #f59e0b); color: #0a0a0f;
+  font-size: 12px; font-weight: 600; font-family: inherit; text-transform: uppercase; margin-bottom: 6px;
+}
+.sp-export-row { display: flex; gap: 4px; }
+.sp-export-sm {
+  flex: 1; padding: 5px; border: 1px solid #2a2a3a; border-radius: 6px;
+  background: #1a1a24; color: #a0a0b0; font-size: 10px; font-weight: 600;
+  font-family: inherit; text-transform: uppercase; text-align: center;
+}
+.sp-export-teal { background: linear-gradient(135deg, #0d9488, #14B8A6); color: #0a0a0f; border: none; }
+
+.sp-mcp {
+  padding: 8px 16px; border-top: 1px solid #2a2a3a;
+  display: flex; align-items: center; gap: 6px; font-size: 11px; color: #606070;
+}
+.sp-mcp-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; }
+</style>
+</head>
+<body>
+
+<div class="webpage">
+  <div class="webpage-header">
+    <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+    <div class="url-bar">https://renderdraw.com/pricing</div>
+  </div>
+  <div class="webpage-content">
+    <h1>Pricing</h1>
+    <p>Start free, scale as you grow. Every plan includes the core RenderDraw creative engine.</p>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="pricing-tier">Starter</div>
+        <div class="pricing-price"><span class="currency">$</span>0<span class="period">/mo</span></div>
+        <div class="pricing-desc">For individuals getting started</div>
+        <ul class="pricing-features">
+          <li>3 Journeys</li>
+          <li>Basic 3D environments</li>
+          <li>Community support</li>
+        </ul>
+        <button class="pricing-btn btn-outline">Get Started</button>
+      </div>
+      <div class="pricing-card highlighted">
+        <div class="pricing-tier" style="color: #FFD700;">Pro</div>
+        <div class="pricing-price"><span class="currency">$</span>29<span class="period">/mo</span></div>
+        <div class="pricing-desc">For teams and professionals</div>
+        <ul class="pricing-features">
+          <li>Unlimited Journeys</li>
+          <li>Premium environments</li>
+          <li>Custom branding</li>
+          <li>Priority support</li>
+        </ul>
+        <button class="pricing-btn btn-gold">Start Pro Trial</button>
+      </div>
+      <div class="pricing-card">
+        <div class="pricing-tier">Enterprise</div>
+        <div class="pricing-price">Custom</div>
+        <div class="pricing-desc">For organizations at scale</div>
+        <ul class="pricing-features">
+          <li>Everything in Pro</li>
+          <li>SSO & SAML</li>
+          <li>Dedicated support</li>
+          <li>SLA guarantee</li>
+        </ul>
+        <button class="pricing-btn btn-outline">Contact Sales</button>
+      </div>
+    </div>
+  </div>
+  <div class="qa-badge qa-badge-1">assert: .pricing-card visible</div>
+  <div class="qa-badge qa-badge-2">assert: .btn-gold text = "Start Pro Trial"</div>
+  <div class="qa-badge qa-badge-3">assert: $29/mo font-size = 32px</div>
+  <div class="code-preview">
+    <span class="code-comment">// Generated by RenderDraw Lens — QA Assertions</span><br>
+    <span class="code-keyword">test</span><span class="code-punc">(</span><span class="code-string">'pricing page visual regression'</span><span class="code-punc">,</span> <span class="code-keyword">async</span> <span class="code-punc">({</span> page <span class="code-punc">}) => {</span><br>
+    &nbsp;&nbsp;<span class="code-keyword">await</span> <span class="code-fn">expect</span><span class="code-punc">(</span>page<span class="code-punc">.</span><span class="code-method">locator</span><span class="code-punc">(</span><span class="code-string">'.pricing-card.highlighted'</span><span class="code-punc">)).</span><span class="code-method">toBeVisible</span><span class="code-punc">();</span><br>
+    &nbsp;&nbsp;<span class="code-keyword">await</span> <span class="code-fn">expect</span><span class="code-punc">(</span>page<span class="code-punc">.</span><span class="code-method">locator</span><span class="code-punc">(</span><span class="code-string">'.btn-gold'</span><span class="code-punc">)).</span><span class="code-method">toHaveText</span><span class="code-punc">(</span><span class="code-string">'Start Pro Trial'</span><span class="code-punc">);</span><br>
+    <span class="code-punc">});</span>
+  </div>
+</div>
+
+<div class="sidepanel">
+  <div class="sp-header">
+    <div class="sp-brand">
+      <div class="sp-logo">◎</div>
+      <div class="sp-title">RenderDraw Lens</div>
+    </div>
+  </div>
+  <div class="sp-project-bar">
+    <span class="sp-project-label">Project</span>
+    <span class="sp-project-name">RenderDraw Web</span>
+  </div>
+  <div class="sp-tabs">
+    <div class="sp-tab sp-tab-inactive">Feedback</div>
+    <div class="sp-tab sp-tab-inactive">Video</div>
+    <div class="sp-tab sp-tab-active">QA</div>
+  </div>
+  <div class="sp-list">
+    <div class="qa-card">
+      <div class="qa-card-header">
+        <div class="qa-card-num">1</div>
+        <div class="qa-card-target">.pricing-card</div>
+        <span class="qa-card-status">pending</span>
+      </div>
+      <div class="qa-card-assertion">
+        <span class="qa-assert-type">visibility</span> <span class="qa-assert-op">→</span> <span class="qa-assert-val">visible</span><br>
+        <span class="qa-assert-type">count</span> <span class="qa-assert-op">→</span> <span class="qa-assert-val">3</span>
+      </div>
+      <div class="qa-card-badges">
+        <span class="badge badge-intent">layout_check</span>
+        <span class="badge badge-tag">pricing</span>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-card-header">
+        <div class="qa-card-num">2</div>
+        <div class="qa-card-target">.btn-gold</div>
+        <span class="qa-card-status">pending</span>
+      </div>
+      <div class="qa-card-assertion">
+        <span class="qa-assert-type">text</span> <span class="qa-assert-op">==</span> <span class="qa-assert-val">"Start Pro Trial"</span><br>
+        <span class="qa-assert-type">background</span> <span class="qa-assert-op">→</span> <span class="qa-assert-val">gradient(#FFD700)</span>
+      </div>
+      <div class="qa-card-badges">
+        <span class="badge badge-intent">content_check</span>
+        <span class="badge badge-tag">cta</span>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-card-header">
+        <div class="qa-card-num">3</div>
+        <div class="qa-card-target">.pricing-price</div>
+        <span class="qa-card-status">pending</span>
+      </div>
+      <div class="qa-card-assertion">
+        <span class="qa-assert-type">font-size</span> <span class="qa-assert-op">==</span> <span class="qa-assert-val">32px</span><br>
+        <span class="qa-assert-type">font-weight</span> <span class="qa-assert-op">==</span> <span class="qa-assert-val">700</span>
+      </div>
+      <div class="qa-card-badges">
+        <span class="badge badge-intent">style_check</span>
+        <span class="badge badge-tag">typography</span>
+      </div>
+    </div>
+  </div>
+  <div class="sp-export">
+    <button class="sp-export-btn">📋 Copy All Feedback</button>
+    <div class="sp-export-row">
+      <div class="sp-export-sm">Copy MD</div>
+      <div class="sp-export-sm">Copy JSON</div>
+      <div class="sp-export-sm sp-export-teal">Playwright</div>
+      <div class="sp-export-sm sp-export-teal">Push MCP</div>
+    </div>
+  </div>
+  <div class="sp-mcp">
+    <div class="sp-mcp-dot"></div>
+    MCP Connected (port 4848)
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280, height=800" />
+<title>Screenshot — Video Direction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  width: 1280px; height: 800px; overflow: hidden;
+  font-family: 'DM Sans', sans-serif;
+  background: #0a0a0f; color: #fff; display: flex;
+}
+
+.webpage {
+  flex: 1; background: #111118; position: relative; overflow: hidden;
+}
+.webpage-header {
+  height: 56px; background: #16161e; border-bottom: 1px solid #2a2a3a;
+  display: flex; align-items: center; padding: 0 24px; gap: 12px;
+}
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot-r { background: #ef4444; } .dot-y { background: #f59e0b; } .dot-g { background: #22c55e; }
+.url-bar {
+  flex: 1; margin-left: 12px;
+  background: #0a0a0f; border-radius: 6px; padding: 6px 14px;
+  font-size: 12px; color: #606070; font-family: 'JetBrains Mono', monospace;
+}
+
+/* Fake 3D scene */
+.scene {
+  position: relative; height: calc(100% - 56px);
+  background: radial-gradient(ellipse at center, #16161e 0%, #0a0a0f 70%);
+  display: flex; align-items: center; justify-content: center;
+}
+.scene-grid {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 40%;
+  background: linear-gradient(to bottom, transparent, rgba(20,184,166,0.03));
+  background-image:
+    linear-gradient(rgba(20,184,166,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20,184,166,0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+  transform: perspective(500px) rotateX(60deg);
+  transform-origin: bottom;
+}
+.scene-slide {
+  width: 520px; height: 340px;
+  background: #12121a; border: 1px solid #2a2a3a; border-radius: 16px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 40px rgba(20,184,166,0.05);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative; z-index: 2;
+}
+.scene-slide h2 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+.scene-slide p { font-size: 14px; color: #a0a0b0; }
+.scene-slide .logo-mark {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, #FFD700, #f59e0b);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: 700; color: #0a0a0f;
+  margin-bottom: 16px;
+}
+
+/* Sequence markers on the scene */
+.seq-marker {
+  position: absolute; z-index: 3;
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+}
+.seq-1 { top: 120px; left: 180px; background: rgba(239,68,68,0.2); border: 2px solid #ef4444; color: #ef4444; }
+.seq-2 { top: 280px; left: 400px; background: rgba(239,68,68,0.2); border: 2px solid #ef4444; color: #ef4444; }
+.seq-3 { top: 400px; left: 600px; background: rgba(239,68,68,0.2); border: 2px solid #ef4444; color: #ef4444; }
+.seq-line {
+  position: absolute; z-index: 2;
+  border: none; border-top: 2px dashed rgba(239,68,68,0.3);
+}
+.line-1 { top: 136px; left: 212px; width: 188px; transform: rotate(40deg); transform-origin: left; }
+.line-2 { top: 296px; left: 432px; width: 168px; transform: rotate(36deg); transform-origin: left; }
+
+/* Director overlay */
+.director-badge {
+  position: absolute; top: 72px; left: 20px; z-index: 5;
+  background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 8px; padding: 8px 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.rec-dot { width: 8px; height: 8px; border-radius: 50%; background: #ef4444; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.director-badge span { font-size: 11px; color: #ef4444; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+/* ── Side panel ── */
+.sidepanel {
+  width: 340px; flex-shrink: 0; background: #0a0a0f;
+  border-left: 1px solid #2a2a3a; display: flex; flex-direction: column;
+}
+.sp-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-bottom: 1px solid #2a2a3a; background: #12121a;
+}
+.sp-brand { display: flex; align-items: center; gap: 8px; }
+.sp-logo {
+  width: 20px; height: 20px; background: linear-gradient(135deg, #FFD700, #f59e0b);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #0a0a0f;
+}
+.sp-title { font-size: 14px; font-weight: 600; color: #FFD700; }
+
+.sp-project-bar {
+  display: flex; align-items: center; gap: 6px; padding: 6px 16px;
+  border-bottom: 1px solid #2a2a3a; background: rgba(255,215,0,0.02); font-size: 10px;
+}
+.sp-project-label { color: #606070; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+.sp-project-name { color: #FFD700; font-weight: 500; background: #0a0a0f; padding: 3px 8px; border-radius: 4px; border: 1px solid #2a2a3a; }
+
+.sp-tabs { display: flex; border-bottom: 1px solid #2a2a3a; background: #12121a; }
+.sp-tab { flex: 1; padding: 8px 4px; text-align: center; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid transparent; }
+.sp-tab-active { color: #ef4444; border-bottom-color: #ef4444; }
+.sp-tab-inactive { color: #606070; }
+
+.sp-timeline { flex: 1; overflow-y: auto; padding: 8px 8px 8px 20px; }
+
+.tl-step {
+  display: flex; gap: 12px; padding: 10px 8px;
+  border-left: 2px solid #2a2a3a; margin-left: 12px; position: relative;
+}
+.tl-step::before {
+  content: attr(data-step);
+  position: absolute; left: -12px; top: 10px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #12121a; border: 2px solid #14B8A6; color: #14B8A6;
+  font-size: 10px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.tl-action { font-size: 12px; font-weight: 600; color: #14B8A6; text-transform: uppercase; letter-spacing: 0.3px; }
+.tl-target { font-size: 11px; color: #606070; font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+.tl-narration { font-size: 11px; color: #a0a0b0; font-style: italic; margin-top: 4px; }
+.tl-duration { font-size: 10px; color: #606070; margin-top: 2px; }
+
+.sp-export {
+  padding: 10px 12px; border-top: 1px solid #2a2a3a; background: #12121a;
+}
+.sp-export-btn {
+  width: 100%; padding: 10px; border: none; border-radius: 6px;
+  background: linear-gradient(135deg, #FFD700, #f59e0b); color: #0a0a0f;
+  font-size: 12px; font-weight: 600; font-family: inherit; text-transform: uppercase; margin-bottom: 6px;
+}
+.sp-export-row { display: flex; gap: 4px; }
+.sp-export-sm {
+  flex: 1; padding: 5px; border: 1px solid #2a2a3a; border-radius: 6px;
+  background: #1a1a24; color: #a0a0b0; font-size: 10px; font-weight: 600;
+  font-family: inherit; text-transform: uppercase; text-align: center;
+}
+.sp-export-teal { background: linear-gradient(135deg, #0d9488, #14B8A6); color: #0a0a0f; border: none; }
+
+.sp-mcp {
+  padding: 8px 16px; border-top: 1px solid #2a2a3a;
+  display: flex; align-items: center; gap: 6px; font-size: 11px; color: #606070;
+}
+.sp-mcp-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; }
+</style>
+</head>
+<body>
+
+<div class="webpage">
+  <div class="webpage-header">
+    <div class="dot dot-r"></div>
+    <div class="dot dot-y"></div>
+    <div class="dot dot-g"></div>
+    <div class="url-bar">https://journeys.studio/view/abc123</div>
+  </div>
+  <div class="scene">
+    <div class="scene-grid"></div>
+    <div class="scene-slide">
+      <div class="logo-mark">◎</div>
+      <h2>Product Launch 2026</h2>
+      <p>Building the future of presentations</p>
+    </div>
+    <div class="seq-marker seq-1">1</div>
+    <div class="seq-marker seq-2">2</div>
+    <div class="seq-marker seq-3">3</div>
+    <div class="seq-line line-1"></div>
+    <div class="seq-line line-2"></div>
+    <div class="director-badge">
+      <div class="rec-dot"></div>
+      <span>Video Director</span>
+    </div>
+  </div>
+</div>
+
+<div class="sidepanel">
+  <div class="sp-header">
+    <div class="sp-brand">
+      <div class="sp-logo">◎</div>
+      <div class="sp-title">RenderDraw Lens</div>
+    </div>
+  </div>
+  <div class="sp-project-bar">
+    <span class="sp-project-label">Project</span>
+    <span class="sp-project-name">Journeys App</span>
+  </div>
+  <div class="sp-tabs">
+    <div class="sp-tab sp-tab-inactive">Feedback</div>
+    <div class="sp-tab sp-tab-active">Video</div>
+    <div class="sp-tab sp-tab-inactive">QA</div>
+  </div>
+  <div class="sp-timeline">
+    <div class="tl-step" data-step="1">
+      <div>
+        <div class="tl-action">zoom → &lt;div&gt; .hero-section</div>
+        <div class="tl-target">.scene-slide</div>
+        <div class="tl-narration">"Start with a wide establishing shot of the presentation"</div>
+        <div class="tl-duration">2000ms · ease-out</div>
+      </div>
+    </div>
+    <div class="tl-step" data-step="2">
+      <div>
+        <div class="tl-action">pan → &lt;h2&gt; .slide-title</div>
+        <div class="tl-target">.scene-slide h2</div>
+        <div class="tl-narration">"Pan to the title to reveal the product name"</div>
+        <div class="tl-duration">1500ms · ease-in-out</div>
+      </div>
+    </div>
+    <div class="tl-step" data-step="3">
+      <div>
+        <div class="tl-action">highlight → &lt;button&gt; .cta</div>
+        <div class="tl-target">.cta-button</div>
+        <div class="tl-narration">"Highlight the call-to-action with a gold glow"</div>
+        <div class="tl-duration">800ms · spring</div>
+      </div>
+    </div>
+    <div class="tl-step" data-step="4">
+      <div>
+        <div class="tl-action">zoom_out → &lt;body&gt;</div>
+        <div class="tl-target">body</div>
+        <div class="tl-narration">"Pull back to reveal the full 3D environment"</div>
+        <div class="tl-duration">2500ms · ease-in</div>
+      </div>
+    </div>
+  </div>
+  <div class="sp-export">
+    <button class="sp-export-btn">📋 Copy All Feedback</button>
+    <div class="sp-export-row">
+      <div class="sp-export-sm">Copy MD</div>
+      <div class="sp-export-sm">Copy JSON</div>
+      <div class="sp-export-sm sp-export-teal">Remotion</div>
+      <div class="sp-export-sm sp-export-teal">Push MCP</div>
+    </div>
+  </div>
+  <div class="sp-mcp">
+    <div class="sp-mcp-dot"></div>
+    MCP Connected (port 4848)
+  </div>
+</div>
+
+</body>
+</html>

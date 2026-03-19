@@ -14,7 +14,7 @@ import type { AnnotationSession } from "../shared/raf-schema";
 // Rehydrate it from IndexedDB so MCP queries return saved data.
 getAllSessions().then((sessions) => {
   hydrateFromDB(sessions);
-  console.log(`[RenderDraw Lens] Hydrated ${sessions.length} sessions from IndexedDB`);
+  console.log(`[Lens] Hydrated ${sessions.length} sessions from IndexedDB`);
 });
 
 // ── Keepalive ──────────────────────────────────
@@ -204,9 +204,9 @@ chrome.runtime.onMessageExternal?.addListener((msg, _sender, sendResponse) => {
 // ── Init ───────────────────────────────────────
 
 chrome.runtime.onInstalled.addListener(() => {
-  console.log("[RenderDraw Lens] Extension installed");
+  console.log("[Lens] Extension installed");
   // Open side panel by default
   chrome.sidePanel?.setOptions?.({ enabled: true });
 });
 
-console.log("[RenderDraw Lens] Service worker started");
+console.log("[Lens] Service worker started");

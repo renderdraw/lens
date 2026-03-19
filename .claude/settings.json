@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "lens": {
+      "command": "npx",
+      "args": ["tsx", "src/mcp-bridge/server.ts"],
+      "cwd": ".",
+      "env": {
+        "LENS_MCP_PORT": "4848"
+      }
+    }
+  }
+}

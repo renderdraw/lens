@@ -1,5 +1,5 @@
 // ============================================================
-// RenderDraw Annotation Format (RAF) — Full TypeScript Schema
+// Lens Annotation Format (RAF) — Full TypeScript Schema
 // ============================================================
 
 export type AnnotationMode = "feedback" | "video_direction" | "qa_assertion";
@@ -136,9 +136,9 @@ export interface RAFAnnotation {
 // ── Project Context ────────────────────────────
 
 export interface ProjectContext {
-  slug: string;       // e.g. "journeys-app", "renderdraw-engine"
+  slug: string;       // e.g. "journeys-app", "my-engine"
   name: string;       // Display name
-  repo?: string;      // e.g. "github.com/renderdraw/journeys"
+  repo?: string;      // e.g. "github.com/org/repo"
 }
 
 // ── Session ────────────────────────────────────

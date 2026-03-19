@@ -582,6 +582,9 @@ chrome.runtime.onMessage.addListener((msg) => {
 (async () => {
   await loadProjects();
 
+  // Render immediately so the side panel isn't blank while we load data
+  render();
+
   // Get current state from active tab's content script
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
   const activeTab = tabs[0];

@@ -1,4 +1,4 @@
-import { defineConfig, Plugin } from "vite";
+import { defineConfig, Plugin, IndexHtmlTransformHook } from "vite";
 import { resolve } from "path";
 import { readFileSync, writeFileSync, existsSync } from "fs";
 
@@ -48,12 +48,28 @@ function inlineContentScript(): Plugin {
   };
 }
 
+// Strip `crossorigin` from extension HTML — Chrome's chrome-extension:// protocol
+// doesn't serve CORS headers, so CORS-mode fetches can fail silently.
+function stripCrossOrigin(): Plugin {
+  return {
+    name: "strip-crossorigin",
+    transformIndexHtml: {
+      order: "post" as const,
+      handler(html: string) {
+        return html.replace(/\s+crossorigin(?:="[^"]*")?/g, "");
+      },
+    },
+  };
+}
+
 export default defineConfig({
   base: "./",
-  plugins: [inlineContentScript()],
+  plugins: [stripCrossOrigin(), inlineContentScript()],
   build: {
     outDir: "dist",
     emptyOutDir: true,
+    crossOriginLoading: false,
+    modulePreload: { polyfill: false },
     rollupOptions: {
       input: {
         background: resolve(__dirname, "src/background/service-worker.ts"),
